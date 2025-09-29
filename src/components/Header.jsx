@@ -78,7 +78,6 @@ const Header = () => {
         setIsDropdownOpen(false);
       }
 
-      // Mobile dropdown - only close if clicking outside the dropdown container
       if (
         mobileDropdownRef.current &&
         !mobileDropdownRef.current.contains(event.target) &&
@@ -165,17 +164,21 @@ const Header = () => {
           >
             About Us
           </a>
-          <div>
+          <div ref={mobileDropdownRef}>
             <div
               className="flex items-center justify-between text-gray-600 hover:text-customGreen cursor-pointer"
-              onClick={toggleDropdown}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleDropdown(e);
+              }}
             >
               <span>Courses</span>
-              <ChevronDownIcon
-                className={`w-5 h-5 transition-transform duration-200 ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
+              {isDropdownOpen ? (
+                <ChevronUpIcon className="w-5 h-5 transition-all duration-200" />
+              ) : (
+                <ChevronDownIcon className="w-5 h-5 transition-all duration-200" />
+              )}
             </div>
             {isDropdownOpen && (
               <div className="ml-4 mt-2 space-y-2">
