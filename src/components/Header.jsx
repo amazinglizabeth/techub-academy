@@ -23,10 +23,7 @@ const Dropdown = ({ isOpen, toggleDropdown }) => {
       )}
 
       {isOpen && (
-        <ul
-          className="absolute left-0 mt-3 w-56 bg-white border border-gray-100 
-                     rounded-xl shadow-lg overflow-hidden z-20 animate-fadeIn"
-        >
+        <ul className="absolute left-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-20 animate-fadeIn">
           {[
             { label: "Product Design", href: "/ProductDesign" },
             { label: "Front-end Engineering", href: "/FrontEnd" },
@@ -38,9 +35,10 @@ const Dropdown = ({ isOpen, toggleDropdown }) => {
             <li key={item.label}>
               <a
                 href={item.href}
-                className="block px-4 py-2.5 text-sm text-gray-700 
-                           hover:bg-green-50 hover:text-customGreen 
-                           transition-colors duration-200"
+                className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-customGreen transition-colors duration-200"
+                onClick={(e) => {
+                  window.location.href = item.href;
+                }}
               >
                 {item.label}
               </a>
@@ -58,9 +56,7 @@ const Header = () => {
   const dropdownContainerRef = useRef(null);
   const mobileDropdownRef = useRef(null);
 
-  const toggleDropdown = (e) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+  const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
@@ -78,6 +74,7 @@ const Header = () => {
         setIsDropdownOpen(false);
       }
 
+      // Mobile dropdown
       if (
         mobileDropdownRef.current &&
         !mobileDropdownRef.current.contains(event.target) &&
@@ -121,13 +118,12 @@ const Header = () => {
             className="flex items-center relative"
             ref={dropdownContainerRef}
           >
-            <a
-              href="#"
-              className="text-gray-600 hover:text-customGreen mr-1"
+            <span
+              className="text-gray-600 hover:text-customGreen mr-1 cursor-pointer"
               onClick={toggleDropdown}
             >
               Courses
-            </a>
+            </span>
             <Dropdown isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
           </div>
           <a href="#" className="text-gray-600 hover:text-customGreen">
@@ -167,11 +163,7 @@ const Header = () => {
           <div ref={mobileDropdownRef}>
             <div
               className="flex items-center justify-between text-gray-600 hover:text-customGreen cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDropdown(e);
-              }}
+              onClick={toggleDropdown}
             >
               <span>Courses</span>
               {isDropdownOpen ? (
@@ -181,12 +173,15 @@ const Header = () => {
               )}
             </div>
             {isDropdownOpen && (
-              <div className="ml-4 mt-2 space-y-2">
+              <div className="ml-4 mt-2 space-y-1">
                 {courseItems.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
-                    className="block py-2 text-sm text-gray-700 hover:text-customGreen transition-colors duration-200"
+                    className="block py-3 px-4 text-sm text-gray-700 hover:text-customGreen hover:bg-green-50 rounded-lg transition-all duration-200"
+                    onClick={(e) => {
+                      window.location.href = item.href;
+                    }}
                   >
                     {item.label}
                   </a>
