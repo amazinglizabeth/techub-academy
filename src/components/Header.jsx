@@ -104,7 +104,7 @@ const Header = () => {
         closeDropdown();
       }
 
-      // Close mobile menu if clicked outside (excluding hamburger button)
+      // Close mobile menu if clicked outside
       if (
         isMobileMenuOpen &&
         mobileMenuRef.current &&
