@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import logo from "../assets/images/logo.png";
 
-const Dropdown = ({ isOpen, toggleDropdown }) => {
+const Dropdown = ({ isOpen, toggleDropdown, courseItems, onItemClick }) => {
   return (
     <div className="relative inline-block">
       {isOpen ? (
@@ -24,19 +24,16 @@ const Dropdown = ({ isOpen, toggleDropdown }) => {
 
       {isOpen && (
         <ul className="absolute left-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-20 animate-fadeIn">
-          {[
-            { label: "Product Design", href: "/ProductDesign" },
-            { label: "Front-end Engineering", href: "/FrontEnd" },
-            { label: "Back-end Engineering", href: "/BackEnd" },
-            { label: "Data Analysis", href: "/DataAnalysis" },
-            { label: "Cybersecurity", href: "/CyberSecurity" },
-            { label: "Digital Marketing", href: "/DigitalMarketing" },
-          ].map((item) => (
+          {courseItems.map((item) => (
             <li key={item.label}>
               <a
                 href={item.href}
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-customGreen transition-colors duration-200"
                 onClick={(e) => {
+                  e.preventDefault();
+                  onItemClick();
+                  // Navigate immediately
+                  console.log("Desktop navigating to:", item.href);
                   window.location.href = item.href;
                 }}
               >
@@ -54,44 +51,22 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownContainerRef = useRef(null);
-  const mobileDropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const hamburgerButtonRef = useRef(null);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Desktop dropdown
-      if (
-        dropdownContainerRef.current &&
-        !dropdownContainerRef.current.contains(event.target)
-      ) {
-        setIsDropdownOpen(false);
-      }
+  const closeDropdown = () => setIsDropdownOpen(false);
 
-      // Mobile dropdown
-      if (
-        mobileDropdownRef.current &&
-        !mobileDropdownRef.current.contains(event.target) &&
-        isMobileMenuOpen &&
-        isDropdownOpen
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMobileMenuOpen, isDropdownOpen]);
-
-  // Course items array to avoid duplication
   const courseItems = [
     { label: "Product Design", href: "/ProductDesign" },
     { label: "Front-end Engineering", href: "/FrontEnd" },
@@ -100,6 +75,55 @@ const Header = () => {
     { label: "Cybersecurity", href: "/CyberSecurity" },
     { label: "Digital Marketing", href: "/DigitalMarketing" },
   ];
+
+  // Handle mobile dropdown item click
+  const handleMobileItemClick = (href) => {
+    console.log("Mobile navigating to:", href);
+    closeMobileMenu();
+
+    // Navigate immediately
+    window.location.href = href;
+  };
+
+  // Handle desktop dropdown item click
+  const handleDesktopItemClick = (href) => {
+    console.log("Desktop navigating to:", href);
+    closeDropdown();
+    window.location.href = href;
+  };
+
+  // Click outside detection for both desktop and mobile
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close desktop dropdown if clicked outside
+      if (
+        dropdownContainerRef.current &&
+        !dropdownContainerRef.current.contains(event.target) &&
+        !mobileMenuRef.current?.contains(event.target)
+      ) {
+        closeDropdown();
+      }
+
+      // Close mobile menu if clicked outside (excluding hamburger button)
+      if (
+        isMobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        hamburgerButtonRef.current &&
+        !hamburgerButtonRef.current.contains(event.target)
+      ) {
+        closeMobileMenu();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -124,7 +148,12 @@ const Header = () => {
             >
               Courses
             </span>
-            <Dropdown isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
+            <Dropdown
+              isOpen={isDropdownOpen}
+              toggleDropdown={toggleDropdown}
+              courseItems={courseItems}
+              onItemClick={() => handleDesktopItemClick}
+            />
           </div>
           <a href="#" className="text-gray-600 hover:text-customGreen">
             Projects
@@ -140,7 +169,8 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-700 focus:outline-none"
+          ref={hamburgerButtonRef}
+          className="md:hidden text-gray-700 focus:outline-none z-50"
           onClick={toggleMobileMenu}
         >
           {isMobileMenuOpen ? (
@@ -153,17 +183,30 @@ const Header = () => {
 
       {/* Mobile Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-md px-6 py-4 space-y-4">
+        <div
+          ref={mobileMenuRef}
+          className="md:hidden bg-white shadow-lg px-6 py-4 space-y-0 absolute top-full left-0 right-0 z-40 border-t border-gray-200"
+        >
           <a
             href="/About"
-            className="block text-gray-600 hover:text-customGreen"
+            className="block py-3 px-4 text-gray-600 hover:text-customGreen hover:bg-green-50 rounded-lg transition-colors duration-200"
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("About Us clicked");
+              handleMobileItemClick("/About");
+            }}
           >
             About Us
           </a>
-          <div ref={mobileDropdownRef}>
-            <div
-              className="flex items-center justify-between text-gray-600 hover:text-customGreen cursor-pointer"
-              onClick={toggleDropdown}
+
+          {/* Courses toggle */}
+          <div className="py-2">
+            <button
+              className="w-full flex items-center justify-between text-gray-600 hover:text-customGreen cursor-pointer py-3 px-4 hover:bg-green-50 rounded-lg transition-colors duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleDropdown();
+              }}
             >
               <span>Courses</span>
               {isDropdownOpen ? (
@@ -171,16 +214,20 @@ const Header = () => {
               ) : (
                 <ChevronDownIcon className="w-5 h-5 transition-all duration-200" />
               )}
-            </div>
+            </button>
+
+            {/* Courses links */}
             {isDropdownOpen && (
-              <div className="ml-4 mt-2 space-y-1">
+              <div className="mt-2 space-y-1 pl-4">
                 {courseItems.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
-                    className="block py-3 px-4 text-sm text-gray-700 hover:text-customGreen hover:bg-green-50 rounded-lg transition-all duration-200"
+                    className="block py-3 px-4 text-sm text-gray-700 hover:text-customGreen bg-green-50 rounded-lg transition-all duration-200"
                     onClick={(e) => {
-                      window.location.href = item.href;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleMobileItemClick(item.href);
                     }}
                   >
                     {item.label}
@@ -189,14 +236,30 @@ const Header = () => {
               </div>
             )}
           </div>
-          <a href="#" className="block text-gray-600 hover:text-customGreen">
+
+          <a
+            href="#"
+            className="block py-3 px-4 text-gray-600 hover:text-customGreen hover:bg-green-50 rounded-lg transition-colors duration-200"
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("Projects clicked");
+              handleMobileItemClick("#");
+            }}
+          >
             Projects
           </a>
-          <a href="#courses">
-            <button className="w-full bg-customGreen text-white py-2 px-4 rounded-3xl hover:bg-green-800">
+
+          <div className="pt-2">
+            <button
+              className="w-full bg-customGreen text-white py-3 px-4 rounded-3xl hover:bg-green-800 transition-colors duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleMobileItemClick("#courses");
+              }}
+            >
               Explore courses
             </button>
-          </a>
+          </div>
         </div>
       )}
     </header>
