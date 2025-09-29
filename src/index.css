@@ -1,0 +1,77 @@
+/* === Google Fonts first === */
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;700&display=swap");
+
+/* === Import Tailwind core === */
+@import "tailwindcss";
+
+/* === Base font for body === */
+body {
+  font-family: "Manrope", sans-serif;
+}
+
+/* === Custom colors using CSS variables === */
+:root {
+  --customGreen: rgba(50, 124, 60, 1);
+}
+
+/* === Animations === */
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  12.5%,
+  37.5% {
+    opacity: 1;
+  }
+  50%,
+  75% {
+    opacity: 0;
+  }
+}
+
+/* Animation utilities */
+.animate-image1 {
+  animation: fade 24s infinite ease-in-out 0s;
+}
+.animate-image2 {
+  animation: fade 24s infinite ease-in-out 3s;
+}
+.animate-image3 {
+  animation: fade 24s infinite ease-in-out 6s;
+}
+.animate-image4 {
+  animation: fade 24s infinite ease-in-out 9s;
+}
+.animate-image5 {
+  animation: fade 24s infinite ease-in-out 12s;
+}
+.animate-image6 {
+  animation: fade 24s infinite ease-in-out 15s;
+}
+.animate-image7 {
+  animation: fade 24s infinite ease-in-out 18s;
+}
+.animate-image8 {
+  animation: fade 24s infinite ease-in-out 21s;
+}
+
+/* Text decoration thickness utilities */
+.text-thin {
+  text-decoration-thickness: 1px;
+}
+.text-normal {
+  text-decoration-thickness: 3px;
+}
+.text-thick {
+  text-decoration-thickness: 4px;
+}
+
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
