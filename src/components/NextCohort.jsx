@@ -17,7 +17,7 @@ const NextCohort = () => {
       </p>
       <a
         href="/Registration"
-        className="block bg-[var(--customGreen)] py-4 sm:py-5 px-6 sm:px-7 rounded-[40px] text-white text-lg sm:text-xl hover:bg-green-700 mt-4"
+        className="block bg-[var(--customGreen)] py-4 sm:py-5 px-6 sm:px-7 rounded-[40px] text-white text-lg sm:text-xl hover:bg-green-700 mt-4 cursor-pointer"
       >
         Enroll now
       </a>

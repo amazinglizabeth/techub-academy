@@ -7,7 +7,7 @@ import twitter from "./images/twitter.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-[rgba(195,227,200,1)] py-8 px-6 md:px-16">
+    <footer className="bg-[rgba(195,227,200,1)] py-8 px-6 md:px-10">
       <div className="flex flex-col md:flex-row justify-between md:gap-8">
         {/* Left Section */}
         <div className="flex flex-col space-y-4">
@@ -88,7 +88,7 @@ const Footer = () => {
           />
           <button
             type="submit"
-            className="px-8 py-3 bg-[var(--customGreen)] text-white text-l rounded-3xl hover:bg-green-600"
+            className="px-8 py-3 bg-[var(--customGreen)] text-white text-l rounded-3xl hover:bg-green-600 cursor-pointer"
           >
             Subscribe
           </button>
